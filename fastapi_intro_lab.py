@@ -669,3 +669,4 @@ if __name__ == "__main__":
     print("🚀 Telemetry Live Stream  : http://127.0.0.1:8000/api/v1/telemetry/gondola-stream")
     print("=" * 78 + "\n")
     uvicorn.run("fastapi_intro_lab:app", host="127.0.0.1", port=8000, reload=True)
+

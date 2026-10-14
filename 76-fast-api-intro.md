@@ -699,3 +699,4 @@ In **Lab 77 — Building Your First Production FastAPI Microservice (`77-fastapi
 | **Default Port** | 8000 |
 | **Frameworks** | FastAPI 0.110+, Starlette, Pydantic v2, Uvicorn |
 | **License** | MIT License |
+
