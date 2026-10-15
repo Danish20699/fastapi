@@ -1,47 +1,41 @@
-import os
-from typing import Optional
 from fastapi import FastAPI
 from fastapi.responses import FileResponse
+from typing import Optional
 from pydantic import BaseModel
 
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+# 1. create the application instance
+app = FastAPI()
 
-# 1. Create an Application Instance
-app = FastAPI(
-    title="FastAPI Hello World Web App",
-    description="Hands-on learning by doing: routing, HTML file serving, dynamic path parameters, query parameters, and Pydantic validation.",
-    version="1.0.0"
-)
-
-# 2. App decorator for HTTP GET request at ROOT URL "/"
+# 2. path operation decorator and Handler function
 @app.get("/")
 def read_root():
-    return {"message": "Hello-World"}
+    return {"Hello": "World"}
 
-# 3. Serve Static HTML Pages via FileResponse
+# 3. serving static html files 
 @app.get("/new-home")
-def read_home():
-    return FileResponse(os.path.join(BASE_DIR, "index.html"))
+def get_new_home():
+    return FileResponse("index.html")
 
 @app.get("/contact")
-def read_contact():
-    return FileResponse(os.path.join(BASE_DIR, "contact.html"))
+def get_contact():
+    return FileResponse("contact.html")
 
-# 4. Basic Static Route
+# 4. Static users page
 @app.get("/users")
-def read_users():
+def get_users():
     return {"message": "This is user page"}
 
-# 5. Dynamic Route and Type Validation (Path Parameters)
+# 5. Dynamic route with integer validation
 @app.get("/users/{id}")
 def read_user(id: int):
     return {"message": f"This is user {id} page"}
 
+# 6. Nested dynamic route
 @app.get("/users/{id}/contact")
 def read_user_contact(id: int):
     return {"message": f"This is user {id} contact page. His contact no. is 911"}
 
-# 6. Dynamic Route for Blog
+# 7. Blog Path Parameter
 @app.get("/blog/{id}")
 def get_blog(id: int):
     return {"Type": "blog", "id": id}
@@ -50,23 +44,23 @@ def get_blog(id: int):
 def get_blog_comments(id: int):
     return {"Type": "Comments", "Blog-id": id}
 
-# 7. Query Parameters (with default values and optional types)
+# 8. Blog Query Parameters
 @app.get("/blog")
 def list_blogs(
-    limit: int = 5,
-    published: bool = True,
-    num_comments: Optional[int] = None,
-    sort: Optional[bool] = None
+    limit: int = 10, 
+    published: bool = True, 
+    sort: Optional[str] = None
 ):
     return {
         "Type": "blog",
         "limit": limit,
-        "Published": published,
-        "no. Of comments": num_comments,
-        "sort": sort
+        "published": published,
+        "sort": sort,
+        "data": f"Showing {limit} posts (published={published})"
     }
 
-# 8. Pydantic Model for POST Request Body
+
+# 9. Pydantic Model & POST for Blog
 class Blog(BaseModel):
     id: int
     title: str
@@ -82,24 +76,16 @@ def create_blog(new_blog: Blog):
         "id": new_blog.id
     }
 
-# 9. Contact Form POST Handler for AJAX Submission
-class ContactMessage(BaseModel):
+
+# 10. Pydantic Model & POST for Contact Form
+class ContactForm(BaseModel):
     name: str
     email: str
     message: str
 
 @app.post("/api/contact")
-def submit_contact(contact: ContactMessage):
+def submit_contact(data: ContactForm):
     return {
         "status": "success",
-        "message": f"Thank you, {contact.name}! Your message has been received."
+        "message": f"Thank you {data.name}! We received your message and will email you at {data.email}."
     }
-
-if __name__ == "__main__":
-    import uvicorn
-    print("\n" + "=" * 70)
-    print("🚀 FastAPI Hello-World App Running")
-    print("📍 URL: http://127.0.0.1:8000")
-    print("📖 Docs: http://127.0.0.1:8000/docs")
-    print("=" * 70 + "\n")
-    uvicorn.run("main:app", host="127.0.0.1", port=8000, reload=True)
